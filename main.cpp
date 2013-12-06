@@ -3,21 +3,10 @@
 #include <cmath>
 #include <list>
 #include <Eigen/Core>
-#include <io.h>
-
 
 #include "include/ModelAwas.h"
 #include "include/integratorRK4.h"
 #include "include/ilqr.h"
-
-#define SLEEP_LGTH 2  // sleep time in seconds
-#define NPOINTS    50 // length of array
-
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__TOS_WIN__)
- #include <conio.h>   //for getch(), needed in wait_for_key()
- #include <windows.h> //for Sleep()
- void sleep(int i) { Sleep(i*1000); }
-#endif
 
 using namespace std;
 
@@ -139,8 +128,8 @@ model.display44(cost_dxx);
     state(1) = 0.0;
     state(3) = 0.0;
     ModelAwas::Control_t control(2);
-    control(1) = 8; control(0) = 3;
-    integratorRK4<ModelAwas> robot;
+    control(1) = 0; control(0) = 0;
+//    integratorRK4<ModelAwas> robot;
   for(int i = 0; i<1000;i++){
  state = robot.integrate(state,control);
     cout << state << endl<<endl;
@@ -167,10 +156,10 @@ algo.displayV(algo.controlList);
 
 /* --- Mise en place de l'algorithme complet -------------*/
 ilqr<ModelAwas> algo;
-State_t s = model.init(0.05,0.1);
+State_t s = model.init(0.04,0.1);
 algo.completeAlgo(s);
 
-algo.displayV(algo.torqueList);
+//algo.displayV(algo.torqueList);
 
 ofstream fichier("test.txt", ios::out | ios::trunc);
 for(std::list<double>::iterator i=algo.torqueList.begin();i!=algo.torqueList.end();i++){
@@ -178,23 +167,6 @@ fichier<<*i;
 fichier<<endl;}
 
 
-/*
-Gnuplot::set_GNUPlotPath("C:/Program Files (x86)/gnuplot/bin");
 
-system("cd C:/Program Files (x86)/gnuplot/bin/ && gnuplot.exe macro.txt ");
-system("pause");
-
-try
-    {
-        Gnuplot g1("lines");
-
-
-
-    }
-    catch (GnuplotException ge)
-    {
-        cout << ge.what() << endl;
-    }
-*/
 return 0;
 }

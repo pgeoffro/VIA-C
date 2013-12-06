@@ -8,16 +8,16 @@ ModelAwas::ModelAwas()
     stiffness = 10000.0;
     inertia = (0.27),
     Wx = (2000),
-    Wu0 = (0.0100),
+    Wu0 = (0.01),
     Wu1 = (0.0),
-    Wterminal = (1000),
-    Wlim = (0.010),
+    Wterminal = (100),
+    Wlim = (10),
     dT = (0.0001),
-    Tdes = (10),
+    Tdes = (57),
     mu = (0.05),
     alpha = (0.01),
     n = (10),
-    window = (5);
+    window = (3);
 
 }
 
@@ -186,7 +186,7 @@ else{
 
 cost_dx (0) = dLtheta;
 cost_dx (1) = 0.0;
-cost_dx (2) = dLr + 10*DL;
+cost_dx (2) = dLr + Wlim*DL;
 cost_dx (3) = 0.0;
 
 return Wx *cost_dx;
@@ -203,13 +203,13 @@ double dLthetatheta = 2.0*stiffness*stiffness*r*r*r*r*cos(theta)*cos(theta) + 2.
 double dLrtheta = 4.0*stiffness*stiffness*r*r*r*cos(theta)*sin(theta) - 4.0*stiffness*r*cos(theta)*(-stiffness*sin(theta)*r*r + Tdes);
 
 // Fonction barrière
-double DL =0;
-if(r<0.06){
-    DL = 2.0/0.01/0.01*1.0/((r-0.05)/0.01)/((r-0.05)/0.01)/((r-0.05)/0.01) -2/0.01/0.01;
-    }
-else{
+    double DL =0;
+    if(r<0.06){
+        DL = 2.0/0.01/0.01*1.0/((r-0.05)/0.01)/((r-0.05)/0.01)/((r-0.05)/0.01) -2/0.01/0.01;
+        }
+    else{
         if(r>0.14){
-    DL = -2.0/0.01/0.01*1.0/((-r+0.15)/0.01)/((-r+0.15)/0.01)/((-r+0.15)/0.01) -2/0.01/0.01;
+            DL = -2.0/0.01/0.01*1.0/((-r+0.15)/0.01)/((-r+0.15)/0.01)/((-r+0.15)/0.01) -2/0.01/0.01;
 }
     }
 
@@ -227,7 +227,7 @@ cost_dxx(1,3) = 0.0;
 
 cost_dxx(2,0) = dLrtheta;
 cost_dxx(2,1) = 0.0;
-cost_dxx(2,2) = dLrr + 10 *DL;
+cost_dxx(2,2) = dLrr + Wlim*DL;
 cost_dxx(2,3) = 0.0;
 
 
@@ -264,4 +264,94 @@ ModelAwas::Cost_dxx ModelAwas::termCost_dxx (const State_t& state) const
 {Cost_dxx cost_dxx = Wterminal * instCost_dxx(state);
 return cost_dxx;
 }
+
+/* ---- Functions for ReInitialization ------------------------*/
+ ModelAwas::Cost_dx ModelAwas::initInstCost_dx (const State_t& state) const{
+ Cost_dx cost_dx(4);
+
+double r = state(2);
+double theta = state(0);
+
+double dLtheta = -2.0*stiffness*r*r*cos(theta)*(- stiffness*sin(theta)*r*r + Tdes);
+
+cost_dx (0) = dLtheta;
+cost_dx (1) = 0.0;
+cost_dx (2) = 0.0;
+cost_dx (3) = 0.0;
+
+return cost_dx;
+ }
+
+ ModelAwas::Cost_dxx ModelAwas::initInstCost_dxx (const State_t& state) const
+{Cost_dxx cost_dxx(4,4);
+
+double r = state(2);
+double theta = state(0);
+
+double dLthetatheta = 2.0*stiffness*stiffness*r*r*r*r*cos(theta)*cos(theta) + 2.0* stiffness*r*r*sin(theta)*(-stiffness*sin(theta)*r*r + Tdes);
+
+cost_dxx(0,0) = dLthetatheta;
+cost_dxx(0,1) = 0.0;
+cost_dxx(0,2) = 0.0;
+cost_dxx(0,3) = 0.0;
+
+cost_dxx(1,0) = 0.0;
+cost_dxx(1,1) = 0.0;
+cost_dxx(1,2) = 0.0;
+cost_dxx(1,3) = 0.0;
+
+
+cost_dxx(2,0) = 0.0;
+cost_dxx(2,1) = 0.0;
+cost_dxx(2,2) = 0.0;
+cost_dxx(2,3) = 0.0;
+
+
+cost_dxx(3,0) = 0.0;
+cost_dxx(3,1) = 0.0;
+cost_dxx(3,2) = 0.0;
+cost_dxx(3,3) = 0.0;
+
+return cost_dxx;
+}
+
+ ModelAwas::State_dx ModelAwas::  initEvolution_dx   (const State_t& state) const  {
+    State_dx state_dx(4,4);
+    state_dx(0,0) = 1;
+    state_dx(0,1) = dT;
+    state_dx(1,0) = -dT*stiffness/inertia*state(2)*state(2);
+    state_dx(1,1) = 1;
+    state_dx(1,2) = 0;
+    state_dx(2,2) = 1;
+    state_dx(2,3) = 0;
+    state_dx(3,3) = 1;
+
+    state_dx(0,2) = 0 ;
+    state_dx(0,3) = 0;
+    state_dx(1,3) = 0;
+    state_dx(2,0) = 0;
+    state_dx(2,1) = 0;
+    state_dx(3,0) = 0;
+    state_dx(3,1) = 0;
+    state_dx(3,2) = 0;
+
+    return state_dx;
+  }
+
+  ModelAwas::State_du ModelAwas::  initEvolution_du   () const
+  {
+    State_du state_du(4,2);
+    state_du(1,0) = -dT;
+    state_du(3,1) = 0;
+
+    state_du(0,0) = 0;
+    state_du(0,1) = 0;
+    state_du(1,1) = 0;
+    state_du(2,0) = 0;
+    state_du(2,1) = 0;
+    state_du(3,0) = 0;
+
+    return state_du;
+  }
+
 

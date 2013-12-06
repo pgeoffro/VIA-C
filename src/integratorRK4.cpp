@@ -15,12 +15,13 @@ template<typename Model_t> integratorRK4<Model_t>::~integratorRK4()
 }
 
   template<typename Model_t>
-  typename Model_t::State_t& integratorRK4<Model_t>::
+  typename Model_t::State_t integratorRK4<Model_t>::
   integrate (const State_t& state, const Control_t& control) const
   {
     double dt;
     dt = model.dT/40;
     State_t state_new = state;
+    //std::cout<<state_new<<std::endl<<std::endl;
     for (int i = 0;i<40;i++){
     State_t k1 = dt*model.evolutionRK4(state_new, control);
     State_t k2 = dt*model.evolutionRK4 (state_new + k1*(dt/2), control);

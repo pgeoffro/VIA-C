@@ -18,7 +18,7 @@ class integratorRK4
 
 
     public :
-        State_t& integrate (const State_t& state, const Control_t& control) const;
+        State_t integrate (const State_t& state, const Control_t& control) const;
 
 
     protected:

@@ -11,7 +11,7 @@ template<typename Model_t>
   ilqr (void)
      {
          nbPreviewSteps = 10;
-         NTotal = 25;
+         NTotal = 50;
   }
 
 /* --- Display values of list<VectorXd> ----------- */
@@ -39,6 +39,7 @@ template<typename Model_t> void ilqr<Model_t>::completeAlgo(const State_t& state
     computeControl();
     switching();
     extend();
+    initLoops();
     }
     }
 
@@ -73,7 +74,7 @@ template<typename Model_t> void
             *iterC = C;
             iterS ++;
              //s = model.evolution(s,C);
-            *iterS = s;
+            *iterS = model.evolution(s,C);
         }
 
     }
@@ -112,7 +113,15 @@ template<typename Model_t> void ilqr<Model_t>::switching(){
 
 /* --- Resize state and control Lists after switching function ----------------*/
 template<typename Model_t> void ilqr<Model_t>::extend(){
-    ControlList_t::iterator iterControl=controlList.end(); iterControl--;
+    StateList_t::iterator iterState=stateList.begin();
+    State_t S = *iterState;
+
+    controlList.resize(model.n-1);
+    stateList.resize(model.n);
+
+    initState(S);
+
+   /* ControlList_t::iterator iterControl=controlList.end(); iterControl--;
     StateList_t::iterator iterState=stateList.end(); iterState--;
     State_t S = *iterState;
     integratorRK4<Model_t> robot;
@@ -127,7 +136,7 @@ template<typename Model_t> void ilqr<Model_t>::extend(){
     for (int i = 0; i< model.window;i++){
     S = robot.integrate(S,C); //*iterControl);
     stateList.insert(stateList.end(),S);
-    }
+    }*/
 }
 
 /* --- Backward Loop ----------- */
@@ -204,7 +213,7 @@ for (ControlList_t::reverse_iterator iterControl=controlList.rbegin(); iterContr
 }
 
 /* --- Forward Loop ----------- */
-template<typename Model_t> void ilqr<Model_t>::forwardLoop () {
+template<typename Model_t> void ilqr<Model_t>::forwardLoop (const double alpha) {
     StateList_t::iterator iterState = stateList.begin();
     OpenLoopTermList::iterator iterOpenLoop = openLoopList.begin();
     GainList::iterator iterGain = gainList.begin();
@@ -214,7 +223,7 @@ template<typename Model_t> void ilqr<Model_t>::forwardLoop () {
 
 for (ControlList_t::iterator iterControl=controlList.begin(); iterControl!=controlList.end();++iterControl){
     iterState++;
-    *iterControl = *iterControl + model.alpha*(*iterOpenLoop) + *iterGain*(state_new - state) ;
+    *iterControl = *iterControl + alpha*(*iterOpenLoop) + *iterGain*(state_new - state) ;
        // std::cout<<*iterControl<<std::endl<<std::endl;
     state = *iterState;
     *iterState = model.evolution(state_new,*iterControl);
@@ -232,7 +241,82 @@ for (ControlList_t::iterator iterControl=controlList.begin(); iterControl!=contr
 template<typename Model_t> void ilqr<Model_t>::Loops(){
 for(int i=0;i<nbPreviewSteps;i++){
 backwardLoop();
-forwardLoop();
+forwardLoop(model.alpha);
+}
+}
+
+/* --- Initialization before new iteration --------------- */
+template<typename Model_t> void ilqr<Model_t>::initLoops(){
+for(int i=0;i<15;i++){
+initBackwardLoop();
+//std::cout<< "1 : \n";
+//displayV(openLoopList);
+forwardLoop(0.1);
+//std::cout<< "2 : \n";
+//displayV(stateList);
+}
+
+}
+
+/* --- Backward Loop ----------- */
+template<typename Model_t> void ilqr<Model_t>::initBackwardLoop () {
+    StateList_t::iterator iterState = stateList.end(); iterState--;
+    VxList::iterator iterVx = vxList.end();  iterVx--;
+    VxxList::iterator iterVxx = vxxList.end(); iterVxx--;
+    OpenLoopTermList::iterator iterOpenLoop = openLoopList.end();
+    GainList::iterator iterGain = gainList.end();
+
+    State_t state = *iterState;
+
+	// Final State
+	Cost_dx vx = 1000.0*model.initInstCost_dx(state);
+    *iterVx= vx; //iterVx--;
+   //std::cout<<"vx : "<<std::endl<<vx<<std::endl;
+	Cost_dxx vxx = 1000.0 *model.initInstCost_dxx(state);
+	*iterVxx = vxx; //iterVxx--;
+    //std::cout<<"vxx : "<<std::endl<<vxx<<std::endl;
+
+for (ControlList_t::reverse_iterator iterControl=controlList.rbegin(); iterControl!=controlList.rend();++iterControl){
+    iterState --;
+    iterVx--;
+    iterVxx --;
+    iterOpenLoop--;
+    iterGain--;
+
+    Control_t control = *iterControl;
+
+    State_dx fx = model.initEvolution_dx(state); //std::cout<<"fx : "<<std::endl<<fx<<std::endl;
+	State_du fu = model. initEvolution_du(); //std::cout<<"fu : "<<std::endl<<fu<<std::endl;
+
+	Cost_dx Lx = model.initInstCost_dx(state); //std::cout<<"Lx : "<<std::endl<<Lx<<std::endl;
+	Cost_dxx Lxx = model.initInstCost_dxx(state); //std::cout<<"Lxx : "<<std::endl<<Lxx<<std::endl;
+
+    for (int i=0;i<4;i++){
+	  vxx(i,i) = vxx(i,i)+ model.mu;}
+
+	VectorXd Qx = Lx + fx.transpose()*vx;
+	VectorXd Qu =  fu.transpose()*vx;
+	MatrixXd Qxx = Lxx + fx.transpose()*vxx*fx;
+	MatrixXd Quu = fu.transpose()*vxx*fu;
+	MatrixXd Qux = fu.transpose()*vxx*fx;
+
+    double QInv =  1.0/Quu(0,0);
+	MatrixXd QuuInv(2,2); //= Quu.inverse(); std::cout<<"quu-1 : "<<std::endl<<QInv<<std::endl;
+	QuuInv(0,1) =  0.0;
+	QuuInv(1,0) =  0.0;
+	QuuInv(0,0) = QInv;
+	QuuInv(1,1) = 1.0;
+
+    *iterOpenLoop =-(QuuInv*Qu);
+	*iterGain = -(QuuInv*Qux);
+	*iterVx = Qx - (Qux.transpose()*QuuInv*Qu);
+	*iterVxx = Qxx - (Qux.transpose()*QuuInv*Qux);
+
+    vx = *iterVx; //std::cout<<"vx : "<<std::endl<<vx<<std::endl;
+    vxx = *iterVxx;
+
+
+
 }
 }
 

@@ -1,34 +1,31 @@
 # depslib dependency file v1.0
-1386117396 source:c:\users\perle\desktop\via\main.cpp
+1386357157 source:c:\users\perle\desktop\via\main.cpp
 	<iostream>
 	<fstream>
 	<cmath>
 	<list>
 	<Eigen/Core>
-	<io.h>
 	"include/ModelAwas.h"
 	"include/integratorRK4.h"
 	"include/ilqr.h"
-	<conio.h>
-	<windows.h>
 
-1386041054 source:c:\users\perle\desktop\via\src\integratorrk4.cpp
+1386258086 source:c:\users\perle\desktop\via\src\integratorrk4.cpp
 	"../include/integratorRK4.h"
 	"../include/ModelAwas.h"
 
-1386041052 c:\users\perle\desktop\via\include\integratorrk4.h
+1386257565 c:\users\perle\desktop\via\include\integratorrk4.h
 
-1386117345 source:c:\users\perle\desktop\via\src\modelawas.cpp
+1386360051 source:c:\users\perle\desktop\via\src\modelawas.cpp
 	"../include/ModelAwas.h"
 	<Eigen/Core>
 	<iostream>
 	<cmath>
 
-1385497730 c:\users\perle\desktop\via\include\modelawas.h
+1386356772 c:\users\perle\desktop\via\include\modelawas.h
 	<iostream>
 	<Eigen/Core>
 
-1386040163 source:c:\users\perle\desktop\via\src\ilqr.cpp
+1386360157 source:c:\users\perle\desktop\via\src\ilqr.cpp
 	"../include/ilqr.h"
 	"../include/ModelAwas.h"
 	"../include/integratorRK4.h"
@@ -36,7 +33,7 @@
 	<Eigen/LU>
 	<cmath>
 
-1386014548 c:\users\perle\desktop\via\include\ilqr.h
+1386360000 c:\users\perle\desktop\via\include\ilqr.h
 	<Eigen/Core>
 	<list>
 

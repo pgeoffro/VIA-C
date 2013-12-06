@@ -63,8 +63,10 @@ class ilqr
 
     public:
     void backwardLoop ();
-    void forwardLoop();
+    void forwardLoop(const double alpha);
     void Loops();
+    void initLoops();
+    void initBackwardLoop();
     void completeAlgo(const State_t& state);
     //void computeControl (const State_t& state);
 

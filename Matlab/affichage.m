@@ -1,5 +1,5 @@
 
 adresse='C:\Users\Perle\Desktop\VIA\test.txt';
 Torque = textread(adresse);
-plot(Torque,'g');
+plot(Torque,'b');
 hold on;

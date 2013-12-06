@@ -70,6 +70,11 @@ class ModelAwas
     virtual Cost_dx termCost_dx(const State_t& state) const;
     virtual Cost_dxx termCost_dxx(const State_t& state) const;
 
+    // Re-Init functions
+    virtual Cost_dx initInstCost_dx(const State_t& state) const;
+    virtual Cost_dxx initInstCost_dxx(const State_t& state) const;
+    virtual State_dx initEvolution_dx   (const State_t& state) const;
+    virtual State_du initEvolution_du   () const;
 
     protected:
     private:
