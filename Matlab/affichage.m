@@ -1,5 +1,9 @@
 
-adresse='C:\Users\Perle\Desktop\VIA\test.txt';
-Torque = textread(adresse);
-plot(Torque,'b');
+adresseRT='C:\Users\Perle\Desktop\VIA\RTorque.txt';
+RTorque = textread(adresseRT);
+plot(RTorque,'g');
 hold on;
+
+adresseHT='C:\Users\Perle\Desktop\VIA\HTorque.txt';
+HTorque = textread(adresseHT);
+plot(HTorque,'k');

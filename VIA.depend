@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1386357157 source:c:\users\perle\desktop\via\main.cpp
+1386459901 source:c:\users\perle\desktop\via\main.cpp
 	<iostream>
 	<fstream>
 	<cmath>
@@ -15,17 +15,17 @@
 
 1386257565 c:\users\perle\desktop\via\include\integratorrk4.h
 
-1386360051 source:c:\users\perle\desktop\via\src\modelawas.cpp
+1386459462 source:c:\users\perle\desktop\via\src\modelawas.cpp
 	"../include/ModelAwas.h"
 	<Eigen/Core>
 	<iostream>
 	<cmath>
 
-1386356772 c:\users\perle\desktop\via\include\modelawas.h
+1386455720 c:\users\perle\desktop\via\include\modelawas.h
 	<iostream>
 	<Eigen/Core>
 
-1386360157 source:c:\users\perle\desktop\via\src\ilqr.cpp
+1386459273 source:c:\users\perle\desktop\via\src\ilqr.cpp
 	"../include/ilqr.h"
 	"../include/ModelAwas.h"
 	"../include/integratorRK4.h"
@@ -33,7 +33,7 @@
 	<Eigen/LU>
 	<cmath>
 
-1386360000 c:\users\perle\desktop\via\include\ilqr.h
+1386457941 c:\users\perle\desktop\via\include\ilqr.h
 	<Eigen/Core>
 	<list>
 

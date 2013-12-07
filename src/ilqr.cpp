@@ -11,7 +11,7 @@ template<typename Model_t>
   ilqr (void)
      {
          nbPreviewSteps = 10;
-         NTotal = 50;
+         NTotal = 150;
   }
 
 /* --- Display values of list<VectorXd> ----------- */
@@ -32,14 +32,16 @@ for (std::list<double>::iterator iter=L.begin(); iter!=L.end();++iter){
 
 /* --- The complete DDP algo - the only one used in main with displayV----------------*/
 template<typename Model_t> void ilqr<Model_t>::completeAlgo(const State_t& state){
+    initTorque(0);
     init();
     initState(state);
     for(int i = 0; i<NTotal;i++){
-    Loops();
-    computeControl();
-    switching();
-    extend();
-    initLoops();
+        initTorque(i);
+        Loops();
+        computeControl();
+        switching();
+        extend();
+        initLoops();
     }
     }
 
@@ -57,6 +59,7 @@ template<typename Model_t> void
     openLoopList.resize(model.n-1);
     stateHist.resize(0);
     torqueList.resize(0);
+    torqueWanted.resize(0);
 
     isInit = true;
 
@@ -78,6 +81,38 @@ template<typename Model_t> void
         }
 
     }
+
+/* --- Profile of desired torque ----------------------*/
+template<typename Model_t> void
+    ilqr<Model_t>::initTorque(const int i){
+        double T=1.0;
+       // Creneau
+
+    /*       model.n = 20;
+        model.window = 3;
+       if (i<20)
+            T = 10.0;
+        else if(i<40)
+            T=0.0;
+        else if (i<60)
+            T = 10.0;
+        else if(i<80)
+            T=0.0;
+        else if(i<100)
+            T=10.0;
+*/
+        // Plynomial
+        model.n = 10;
+        model.window = 5;
+        double t = i*model.dT*model.window;
+        T = 250.0*(t-0.01)*(t-0.35)*(t-0.35)*(t+5);
+
+        model.torqueWanted(T);
+        int n = model.window;
+        if (i!=0)
+            torqueWanted.insert(torqueWanted.end(),n,T);
+    }
+
 
 /* --- Use the computed control to calculate new states (RK4) --------------*/
     template<typename Model_t>

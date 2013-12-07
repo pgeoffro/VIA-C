@@ -47,6 +47,7 @@ class ilqr
     Cost_t costI;
     double tCost;
     TorqueList torqueList;
+    TorqueList torqueWanted;
 
     public:
         ilqr();
@@ -57,6 +58,7 @@ class ilqr
     void displayV(std::list<double> L);
     void init ();
     void initState(const State_t& state);
+    void initTorque(const int i);
     void computeControl();
     void switching();
     void extend();

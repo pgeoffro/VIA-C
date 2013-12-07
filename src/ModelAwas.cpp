@@ -8,16 +8,16 @@ ModelAwas::ModelAwas()
     stiffness = 10000.0;
     inertia = (0.27),
     Wx = (2000),
-    Wu0 = (0.01),
+    Wu0 = (0.1),
     Wu1 = (0.0),
-    Wterminal = (100),
+    Wterminal = (1100),
     Wlim = (10),
-    dT = (0.0001),
-    Tdes = (57),
+    dT = (0.0005),
+    Tdes = (0.0),
     mu = (0.05),
     alpha = (0.01),
     n = (10),
-    window = (3);
+    window = (5);
 
 }
 
@@ -25,6 +25,8 @@ ModelAwas::~ModelAwas()
 {
     //dtor
 }
+
+
 
 /* --- Evolution du système Exponentielle -----------*/
 ModelAwas::State_t ModelAwas::evolutionT1(const State_t& s,const Control_t& C) const{
@@ -59,6 +61,10 @@ state(2) = r;
 state(1) = 0.0; state(3) = 0.0;
 return state;
 }
+
+  void ModelAwas::torqueWanted(const double& t) {
+  ModelAwas::Tdes = t;
+  }
 
 /* --- DISPLAY FUNCTIONS -------------- */
 void ModelAwas::display14(const State_t& state) const{

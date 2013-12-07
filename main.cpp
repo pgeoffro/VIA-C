@@ -156,15 +156,20 @@ algo.displayV(algo.controlList);
 
 /* --- Mise en place de l'algorithme complet -------------*/
 ilqr<ModelAwas> algo;
-State_t s = model.init(0.04,0.1);
+State_t s = model.init(0.05,0.1);
 algo.completeAlgo(s);
 
 //algo.displayV(algo.torqueList);
 
-ofstream fichier("test.txt", ios::out | ios::trunc);
+ofstream fichier("RTorque.txt", ios::out | ios::trunc);
 for(std::list<double>::iterator i=algo.torqueList.begin();i!=algo.torqueList.end();i++){
 fichier<<*i;
 fichier<<endl;}
+
+ofstream fichier2("HTorque.txt", ios::out | ios::trunc);
+for(std::list<double>::iterator i=algo.torqueWanted.begin();i!=algo.torqueWanted.end();i++){
+fichier2<<*i;
+fichier2<<endl;}
 
 
 

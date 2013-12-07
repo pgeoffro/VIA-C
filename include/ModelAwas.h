@@ -48,6 +48,8 @@ class ModelAwas
 
     // AwAS Model
     virtual State_t init(const double& theta, const double& r) const;
+    virtual void torqueWanted(const double& t) ;
+
 
    // Display Functions
     virtual void display14(const State_t& state) const;
