@@ -10,6 +10,8 @@ template<typename Model_t>
   ilqr<Model_t>::
   ilqr (void)
      {
+         n = (10);
+         window = (5);
          nbPreviewSteps = 10;
          NTotal = 150;
   }
@@ -49,14 +51,14 @@ template<typename Model_t> void ilqr<Model_t>::completeAlgo(const State_t& state
 template<typename Model_t> void
     ilqr<Model_t>::init(){
 
-    assert( model.n>0);
+    assert( n>0);
 
-    controlList.resize(model.n-1);
-    stateList.resize(model.n);
-    gainList.resize(model.n-1);
-    vxList.resize(model.n);
-    vxxList.resize(model.n);
-    openLoopList.resize(model.n-1);
+    controlList.resize(n-1);
+    stateList.resize(n);
+    gainList.resize(n-1);
+    vxList.resize(n);
+    vxxList.resize(n);
+    openLoopList.resize(n-1);
     stateHist.resize(0);
     torqueList.resize(0);
     torqueWanted.resize(0);
@@ -102,15 +104,14 @@ template<typename Model_t> void
             T=10.0;
 */
         // Plynomial
-        model.n = 10;
-        model.window = 5;
-        double t = i*model.dT*model.window;
-        T = 250.0*(t-0.01)*(t-0.35)*(t-0.35)*(t+5);
+        n = 10;
+        window = 5;
+        double t = i*model.dT*window;
+        T = 250.0*(t-0.01)*(t-0.35)*(t-0.35)*(t+5)+8;
 
         model.torqueWanted(T);
-        int n = model.window;
         if (i!=0)
-            torqueWanted.insert(torqueWanted.end(),n,T);
+            torqueWanted.insert(torqueWanted.end(),window,T);
     }
 
 
@@ -136,7 +137,7 @@ template<typename Model_t> void
 template<typename Model_t> void ilqr<Model_t>::switching(){
     double Torque;
     State_t S;
-    for (int i = 0; i< model.window;i++){
+    for (int i = 0; i< window;i++){
             S = *stateList.begin();
             stateHist.insert(stateHist.end(),*stateList.begin());
             stateList.erase(stateList.begin());
@@ -151,8 +152,8 @@ template<typename Model_t> void ilqr<Model_t>::extend(){
     StateList_t::iterator iterState=stateList.begin();
     State_t S = *iterState;
 
-    controlList.resize(model.n-1);
-    stateList.resize(model.n);
+    controlList.resize(n-1);
+    stateList.resize(n);
 
     initState(S);
 

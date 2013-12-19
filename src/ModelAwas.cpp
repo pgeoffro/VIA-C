@@ -15,10 +15,7 @@ ModelAwas::ModelAwas()
     dT = (0.0005),
     Tdes = (0.0),
     mu = (0.05),
-    alpha = (0.01),
-    n = (10),
-    window = (5);
-
+    alpha = (0.01);
 }
 
 ModelAwas::~ModelAwas()

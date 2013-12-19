@@ -35,6 +35,8 @@ class ilqr
     bool isInit;
     int compteur;
     int NTotal;
+    int n; //size of the vector during optimization
+    int window;
 
   public: //protected: /* Intermediate results */
     StateList_t stateList;

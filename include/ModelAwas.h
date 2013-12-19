@@ -32,8 +32,7 @@ class ModelAwas
     double Tdes;
     double mu;
     double alpha;
-    int n; //size of the vector during optimization
-    double window;
+
 
   public:
     ModelAwas();

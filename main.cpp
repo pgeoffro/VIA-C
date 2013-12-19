@@ -7,6 +7,7 @@
 #include "include/ModelAwas.h"
 #include "include/integratorRK4.h"
 #include "include/ilqr.h"
+#include "include/Robot3R.h"
 
 using namespace std;
 
@@ -155,7 +156,7 @@ algo.displayV(algo.controlList);
 
 
 /* --- Mise en place de l'algorithme complet -------------*/
-ilqr<ModelAwas> algo;
+/*ilqr<ModelAwas> algo;
 State_t s = model.init(0.05,0.1);
 algo.completeAlgo(s);
 
@@ -170,8 +171,27 @@ ofstream fichier2("HTorque.txt", ios::out | ios::trunc);
 for(std::list<double>::iterator i=algo.torqueWanted.begin();i!=algo.torqueWanted.end();i++){
 fichier2<<*i;
 fichier2<<endl;}
+*/
 
+/* --- Tests des fonctions de Robot3R --------------- */
+Robot3R r3r;
+Robot3R::State_t S(3);
+S(0) = 0; S(1) = 0.0; S(2) = 3.14159/2.0;
+cout<<S<<endl;
+cout<<"xeff : "<<r3r.xeff(S)<<" and yeff : "<<r3r.yeff(S)<<endl;
 
+Robot3R::Control_t C(3);
+C(0) = 0; C(1) = 0; C(2) = 0;
+cout<<"Control : "<<endl<<C<<endl;
+cout<<"Cost_du : "<<endl<<r3r.instCost_du(C)<<endl;
+cout<<"Cost_duu : "<<endl<<r3r.instCost_duu(C)<<endl;
+
+cout<<"Cost : "<<endl<<r3r.instCost(S,C)<<endl;
+cout<<"Cost_dx : "<<endl<<r3r.instCost_dx(S)<<endl;
+cout<<"Cost_dxx : "<<endl<<r3r.instCost_dxx(S)<<endl;
+
+cout<<"TermCost_dx : "<<endl<<r3r.termCost_dx(S)<<endl;
+cout<<"TermCost_dxx : "<<endl<<r3r.termCost_dxx(S)<<endl;
 
 return 0;
 }

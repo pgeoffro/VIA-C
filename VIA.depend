@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1386459901 source:c:\users\perle\desktop\via\main.cpp
+1387470842 source:c:\users\perle\desktop\via\main.cpp
 	<iostream>
 	<fstream>
 	<cmath>
@@ -8,6 +8,7 @@
 	"include/ModelAwas.h"
 	"include/integratorRK4.h"
 	"include/ilqr.h"
+	"include/Robot3R.h"
 
 1386258086 source:c:\users\perle\desktop\via\src\integratorrk4.cpp
 	"../include/integratorRK4.h"
@@ -15,17 +16,17 @@
 
 1386257565 c:\users\perle\desktop\via\include\integratorrk4.h
 
-1386459462 source:c:\users\perle\desktop\via\src\modelawas.cpp
+1387141346 source:c:\users\perle\desktop\via\src\modelawas.cpp
 	"../include/ModelAwas.h"
 	<Eigen/Core>
 	<iostream>
 	<cmath>
 
-1386455720 c:\users\perle\desktop\via\include\modelawas.h
+1387141051 c:\users\perle\desktop\via\include\modelawas.h
 	<iostream>
 	<Eigen/Core>
 
-1386459273 source:c:\users\perle\desktop\via\src\ilqr.cpp
+1387141805 source:c:\users\perle\desktop\via\src\ilqr.cpp
 	"../include/ilqr.h"
 	"../include/ModelAwas.h"
 	"../include/integratorRK4.h"
@@ -33,7 +34,7 @@
 	<Eigen/LU>
 	<cmath>
 
-1386457941 c:\users\perle\desktop\via\include\ilqr.h
+1387141297 c:\users\perle\desktop\via\include\ilqr.h
 	<Eigen/Core>
 	<list>
 
@@ -112,4 +113,14 @@
 	<list>
 	<io.h>
 	<unistd.h>
+
+1387473330 source:c:\users\perle\desktop\via\src\robot3r.cpp
+	"../include/Robot3R.h"
+	<Eigen/Core>
+	<Eigen/LU>
+	<cmath>
+
+1387232431 c:\users\perle\desktop\via\include\robot3r.h
+	<iostream>
+	<Eigen/Core>
 

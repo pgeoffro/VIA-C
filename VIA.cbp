@@ -34,10 +34,12 @@
 		</Compiler>
 		<Unit filename="include/ModelAwas.h" />
 		<Unit filename="include/RK4.h" />
+		<Unit filename="include/Robot3R.h" />
 		<Unit filename="include/ilqr.h" />
 		<Unit filename="include/integratorRK4.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="src/ModelAwas.cpp" />
+		<Unit filename="src/Robot3R.cpp" />
 		<Unit filename="src/ilqr.cpp" />
 		<Unit filename="src/integratorRK4.cpp" />
 		<Extensions>
