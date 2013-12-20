@@ -9,6 +9,7 @@ class integratorRK4
     typedef typename Model_t::State_t State_t;
     typedef typename Model_t::Control_t Control_t;
 
+
     public :
          Model_t model;
 

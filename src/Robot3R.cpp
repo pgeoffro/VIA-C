@@ -9,12 +9,15 @@ Robot3R::Robot3R()
     L = 1.0;
     dT = 0.001;
 
-    Wterminal = 10;
-    Winst = 0.1;
-    Wu = 0.1;
+    Wterminal = 100;
+    Winst = 1;
+    Wu = 0.01;
 
-    xdes = 3;
-    ydes = 0;
+    xdes = 1;
+    ydes = 2.3;
+
+    mu = 0.05;
+    alpha = 0.1;
 }
 
 Robot3R::~Robot3R()
@@ -114,6 +117,14 @@ Robot3R::State_t Robot3R::evolution(State_t& state, const Control_t& control){
     S(0) = state(0) + dT*control(0);
     S(1) = state(1) + dT*control(1);
     S(2) = state(2) + dT*control(2);
+    return S;
+}
+
+Robot3R::State_t Robot3R::evolutionRK4(const State_t& state, const Control_t& control)const{
+    State_t S(3);
+    S(0) = control(0);
+    S(1) = control(1);
+    S(2) = control(2);
     return S;
 }
 

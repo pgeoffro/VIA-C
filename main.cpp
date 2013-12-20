@@ -21,7 +21,7 @@ int main()
 
     integratorRK4<ModelAwas> robot;
 
-    ModelAwas model;
+ //   ModelAwas model;
 /* --- Test de RK4 ------------------*/
 /*
 //  Test RK4 avec Exp
@@ -174,6 +174,7 @@ fichier2<<endl;}
 */
 
 /* --- Tests des fonctions de Robot3R --------------- */
+/*
 Robot3R r3r;
 Robot3R::State_t S(3);
 S(0) = 0; S(1) = 0.0; S(2) = 3.14159/2.0;
@@ -192,6 +193,25 @@ cout<<"Cost_dxx : "<<endl<<r3r.instCost_dxx(S)<<endl;
 
 cout<<"TermCost_dx : "<<endl<<r3r.termCost_dx(S)<<endl;
 cout<<"TermCost_dxx : "<<endl<<r3r.termCost_dxx(S)<<endl;
+*/
+
+/* --- DDP wit Robot3R ------------*/
+Robot3R model;
+Robot3R::State_t S(3);
+S(0) = 3; S(1) = -0.6; S(2) = 0.0;
+
+integratorRK4<Robot3R> rk4;
+ilqr<Robot3R> algo;
+algo.completeAlgo(S);
+
+//algo.displayV(algo.stateList);
+
+ofstream fichier1("q1.txt", ios::out | ios::trunc);
+
+for(std::list<Robot3R::State_t>::iterator i=algo.stateHist.begin();i!=algo.stateHist.end();i++){
+fichier1<<*i;
+fichier1<<endl;
+}
 
 return 0;
 }

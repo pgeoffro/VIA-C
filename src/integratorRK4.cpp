@@ -3,6 +3,7 @@
 
 #include "../include/integratorRK4.h"
 #include "../include/ModelAwas.h"
+#include "../include/Robot3R.h"
 
 template<typename Model_t> integratorRK4<Model_t>:: integratorRK4(void)
 {
@@ -35,5 +36,7 @@ template<typename Model_t> integratorRK4<Model_t>::~integratorRK4()
 
 
 template class integratorRK4<ModelAwas>;
+
+template class integratorRK4<Robot3R>;
 
 //#endif

@@ -1,6 +1,7 @@
 #include "../include/ilqr.h"
 #include "../include/ModelAwas.h"
 #include "../include/integratorRK4.h"
+#include "../include/Robot3R.h"
 
 #include<Eigen/Core>
 #include<Eigen/LU>
@@ -10,10 +11,10 @@ template<typename Model_t>
   ilqr<Model_t>::
   ilqr (void)
      {
-         n = (10);
-         window = (5);
-         nbPreviewSteps = 10;
-         NTotal = 150;
+         n = (20);
+         window = (15);
+         nbPreviewSteps = 20;
+         NTotal = 80;
   }
 
 /* --- Display values of list<VectorXd> ----------- */
@@ -34,16 +35,16 @@ for (std::list<double>::iterator iter=L.begin(); iter!=L.end();++iter){
 
 /* --- The complete DDP algo - the only one used in main with displayV----------------*/
 template<typename Model_t> void ilqr<Model_t>::completeAlgo(const State_t& state){
-    initTorque(0);
+  //  initTorque(0);
     init();
     initState(state);
     for(int i = 0; i<NTotal;i++){
-        initTorque(i);
+        //initTorque(i);
         Loops();
         computeControl();
         switching();
         extend();
-        initLoops();
+       // initLoops();
     }
     }
 
@@ -74,7 +75,7 @@ template<typename Model_t> void
         *iterS = state;
         State_t s = state;
 
-        Control_t C(2); C(0) = 0.0; C(1) = 0.0;
+        Control_t C(3); C(0) = 0.0; C(1) = 0.0; C(2) =0.0;
         for(ControlList_t::iterator iterC = controlList.begin() ; iterC!=controlList.end() ; iterC++ ){
             *iterC = C;
             iterS ++;
@@ -109,7 +110,7 @@ template<typename Model_t> void
         double t = i*model.dT*window;
         T = 250.0*(t-0.01)*(t-0.35)*(t-0.35)*(t+5)+8;
 
-        model.torqueWanted(T);
+//        model.torqueWanted(T);
         if (i!=0)
             torqueWanted.insert(torqueWanted.end(),window,T);
     }
@@ -142,8 +143,8 @@ template<typename Model_t> void ilqr<Model_t>::switching(){
             stateHist.insert(stateHist.end(),*stateList.begin());
             stateList.erase(stateList.begin());
             controlList.erase(controlList.begin());
-            Torque = model.stiffness * S(2) * S(2) *sin(S(0));
-            torqueList.insert(torqueList.end(),Torque);
+//            Torque = model.stiffness * S(2) * S(2) *sin(S(0));
+//            torqueList.insert(torqueList.end(),Torque);
     }
 }
 
@@ -218,7 +219,7 @@ for (ControlList_t::reverse_iterator iterControl=controlList.rbegin(); iterContr
 	Cost_du Lu = model.instCost_du(control);
 	Cost_duu Luu = model.instCost_duu(control);
 
-    for (int i=0;i<4;i++){
+    for (int i=0;i<3;i++){ // 4 pour ModelAwas !!!!!!!!!!
 	  vxx(i,i) = vxx(i,i)+ model.mu;}
 
 	VectorXd Qx = Lx + fx.transpose()*vx;
@@ -282,6 +283,7 @@ forwardLoop(model.alpha);
 }
 
 /* --- Initialization before new iteration --------------- */
+/*
 template<typename Model_t> void ilqr<Model_t>::initLoops(){
 for(int i=0;i<15;i++){
 initBackwardLoop();
@@ -293,9 +295,10 @@ forwardLoop(0.1);
 }
 
 }
+*/
 
 /* --- Backward Loop ----------- */
-template<typename Model_t> void ilqr<Model_t>::initBackwardLoop () {
+/*template<typename Model_t> void ilqr<Model_t>::initBackwardLoop () {
     StateList_t::iterator iterState = stateList.end(); iterState--;
     VxList::iterator iterVx = vxList.end();  iterVx--;
     VxxList::iterator iterVxx = vxxList.end(); iterVxx--;
@@ -351,13 +354,13 @@ for (ControlList_t::reverse_iterator iterControl=controlList.rbegin(); iterContr
     vx = *iterVx; //std::cout<<"vx : "<<std::endl<<vx<<std::endl;
     vxx = *iterVxx;
 
-
-
 }
 }
-
+*/
 
 template class ilqr<ModelAwas>;
+
+template class ilqr<Robot3R>;
 
 
 

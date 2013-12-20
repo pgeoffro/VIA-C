@@ -29,6 +29,9 @@ class Robot3R
         double xdes;
         double ydes;
 
+        double mu;
+        double alpha;
+
     public:
         Robot3R();
         virtual ~Robot3R();
@@ -67,6 +70,8 @@ class Robot3R
 
     /* --- Evolution Functions ------------- */
     virtual State_t evolution(State_t& state, const Control_t& control) ;
+    virtual State_t evolutionRK4(const State_t& state, const Control_t& control) const;
+
     virtual State_dx evolution_dx   (const State_t& state) const;
     virtual State_du evolution_du   () const;
 
