@@ -165,7 +165,7 @@ Robot3R::Cost_dx Robot3R::instCost_dx(const State_t& state) const{
 
 Robot3R::Cost_dxx Robot3R::instCost_dxx(const State_t& state) const{
     Cost_dxx C(3,3);
-
+/* // Normal
     C(0,0) = 2*Winst*(dxeff_q0(state)*dxeff_q0(state) + ddxeff_q0(state)*(xeff(state)-xdes) + dyeff_q0(state)*dyeff_q0(state) + ddyeff_q0(state)*(yeff(state)-ydes));
     C(1,1) = 2*Winst*(dxeff_q1(state)*dxeff_q1(state) + ddxeff_q1(state)*(xeff(state)-xdes) + dyeff_q1(state)*dyeff_q1(state) + ddyeff_q1(state)*(yeff(state)-ydes));
     C(2,2) = 2*Winst*(dxeff_q2(state)*dxeff_q2(state) + ddxeff_q2(state)*(xeff(state)-xdes) + dyeff_q2(state)*dyeff_q2(state) + ddyeff_q2(state)*(yeff(state)-ydes));
@@ -177,7 +177,14 @@ Robot3R::Cost_dxx Robot3R::instCost_dxx(const State_t& state) const{
     C(2,1) = C(1,2);
 
     C(0,2) = 2*Winst*(dxeff_q0(state)*dxeff_q2(state) + (xeff(state)-xdes)*ddxeff_q0q2(state) + dyeff_q0(state)*dyeff_q2(state) + ddyeff_q0q2(state)*(yeff(state)-ydes));
-    C(2,0) = C(0,2);
+    C(2,0) = C(0,2);*/
+
+    // Hess = J'J
+    Cost_dx J = instCost_dx(state);
+    C(0,0) = J(0)*J(0); C(1,1) = J(1)*J(1); C(2,2) = J(2)*J(2);
+    C(1,0) = J(1)*J(0); C(0,1) = C(1,0);
+    C(2,0) = J(2)*J(0); C(0,2) = C(2,0);
+    C(2,1) = J(2)*J(1); C(1,2) = C(2,1);
 
     return C;
 }
