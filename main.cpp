@@ -8,6 +8,8 @@
 #include "include/integratorRK4.h"
 #include "include/ilqr.h"
 #include "include/Robot3R.h"
+#include "include/MathTools.h"
+#include "include/ddpls.h"
 
 using namespace std;
 
@@ -195,8 +197,8 @@ cout<<"TermCost_dx : "<<endl<<r3r.termCost_dx(S)<<endl;
 cout<<"TermCost_dxx : "<<endl<<r3r.termCost_dxx(S)<<endl;
 */
 
-/* --- DDP wit Robot3R ------------*/
-Robot3R model;
+/* --- DDP with Robot3R ------------*/
+/*Robot3R model;
 Robot3R::State_t S(3);
 S(0) = 3; S(1) = -0.6; S(2) = 0.0;
 
@@ -212,6 +214,111 @@ for(std::list<Robot3R::State_t>::iterator i=algo.stateHist.begin();i!=algo.state
 fichier1<<*i;
 fichier1<<endl;
 }
+*/
+
+
+/* --- Tests des outils mathématiques ---------------- */
+/*
+MathTools MT;
+/*MathTools::Matrix I = MT.Id(4);
+MathTools::Vector A(3); A(0) = 12; A(1)= 6; A(2) = -4;
+MathTools::Vector B(3); B(0) = -51; B(1) = 167; B(2) = 24;
+
+/*MathTools::Matrix M(3,3);
+M(0,0) = 12; M(0,1) = -51; M(0,2) = 4;
+M(1,0) = 6; M(1,1) = 167; M(1,2) = -68;
+M(2,0) = -4; M(2,1) = 24; M(2,2) = -41;*/
+
+/*MathTools::Matrix M(3,4);
+M(0,0) = 0; M(0,1) = 4; M(0,2) = 3; M(0,3) = 3;
+M(1,0) = -1; M(1,1) = -3; M(1,2) = -2; M(1,3) = -3;
+M(2,0) = 0; M(2,1) = 0; M(2,2) = 5; M(2,3) = 3;*/
+
+/*
+MathTools::Matrix M(4,3);
+M(0,0) = 2; M(0,1) = 4; M(0,2) = 0;
+M(1,0) = -1; M(1,1) = 0; M(1,2) = 0;
+M(2,0) = 3; M(2,1) = 3; M(2,2) = 5;
+M(3,0) = 2; M(3,1) = 3; M(3,2) = 3;*/
+
+/*MathTools::Matrix M(10,6);
+M(0,0) = -1.492 ;
+M(0,1) = -1.351;
+M(0,2) = -0.6755;
+M(1,0) = -2.4678 ;
+M(1,1) = -0.7374 ;
+M(1,2) = -0.7374 ;
+M(2,3) = 0.01;
+M(3,4) = 0.01;
+M(4,5) = 0.01;
+//MT.Proj(A,A,3);
+//MathTools::Matrix Q = MT.GramSchmidtQ(M,3,3);
+MathTools::Matrix U = MT.HouseholderQ(M,10,6);
+MathTools::Matrix R = MT.GramSchmidtR(M,U,10,6);
+
+//std::cout<<MT.Proj(B,A,3)<<std::endl<<std::endl;
+std::cout<<M<<std::endl<<std::endl;
+//std::cout<<Q<<std::endl<<std::endl;
+std::cout<<"U : "<<std::endl<<U<<std::endl<<std::endl;
+std::cout<<"R :"<<std::endl<<R<<std::endl;
+std::cout<<"M :"<<std::endl<<U*R<<std::endl;
+*/
+
+/* --- Tests des fonctions LS du Robot R3 --------- */
+/*MathTools MT;
+Robot3R model;
+Robot3R::State_t S(3);
+S(0) = 3; S(1) = -0.6; S(2) = 0.0;
+Robot3R::Control_t C(3);
+C(0) = 1; C(1) = 2; C(2) = -1;
+//std::cout<<model.instCostLS(S,C)<<std::endl;
+//std::cout<<model.instCostLS_dx(S,C)<<std::endl;
+//std::cout<<model.instCostLS_du(S,C)<<std::endl;
+
+Robot3R::CostLS_du Rurx = model.instCostLSrurx(S,C);
+MathTools::Matrix Q = MT.HouseholderQ(Rurx,5,6);
+MathTools::Matrix R = MT.GramSchmidtR(Rurx,Q,5,6);
+
+std::cout<<"Rurx : "<<Rurx<<std::endl;
+std::cout<<"Q : "<<Q<<std::endl;
+std::cout<<"R : "<<R<<std::endl;
+*/
+
+/* --- DDP LS ---------- */
+MathTools MT;
+Robot3R model;
+Robot3R::State_t S(3);
+S(0) = 3; S(1) = 1.5; S(2) = 0.0;
+Robot3R::Control_t C(3);
+C(0) = 1; C(1) = 2; C(2) = -1;
+
+ddpls<Robot3R> algo;
+algo.init();
+algo.initState(S);
+//algo.initR();
+//algo.backwardLoop();
+//algo.forwardLoop(0);
+//algo.Loops();
+algo.completeAlgo(S);
+ofstream fichier1("ddpls.txt", ios::out | ios::trunc);
+
+for(std::list<Robot3R::State_t>::iterator i=algo.stateHist.begin();i!=algo.stateHist.end();i++){
+fichier1<<*i;
+fichier1<<endl;
+}
+
+ilqr<Robot3R> algo2;
+algo2.completeAlgo(S);
+
+//algo.displayV(algo.stateList);
+
+ofstream fichier2("q1.txt", ios::out | ios::trunc);
+
+for(std::list<Robot3R::State_t>::iterator i=algo2.stateHist.begin();i!=algo2.stateHist.end();i++){
+fichier2<<*i;
+fichier2<<endl;
+}
+//std::cout<<"G : "<<algo.G<<std::endl;
 
 return 0;
 }

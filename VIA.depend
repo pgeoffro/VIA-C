@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1387546688 source:c:\users\perle\desktop\via\main.cpp
+1389672709 source:c:\users\perle\desktop\via\main.cpp
 	<iostream>
 	<fstream>
 	<cmath>
@@ -9,6 +9,8 @@
 	"include/integratorRK4.h"
 	"include/ilqr.h"
 	"include/Robot3R.h"
+	"include/MathTools.h"
+	"include/ddpls.h"
 
 1387476658 source:c:\users\perle\desktop\via\src\integratorrk4.cpp
 	"../include/integratorRK4.h"
@@ -27,7 +29,7 @@
 	<iostream>
 	<Eigen/Core>
 
-1387546291 source:c:\users\perle\desktop\via\src\ilqr.cpp
+1389674040 source:c:\users\perle\desktop\via\src\ilqr.cpp
 	"../include/ilqr.h"
 	"../include/ModelAwas.h"
 	"../include/integratorRK4.h"
@@ -116,13 +118,37 @@
 	<io.h>
 	<unistd.h>
 
-1387546557 source:c:\users\perle\desktop\via\src\robot3r.cpp
+1389671732 source:c:\users\perle\desktop\via\src\robot3r.cpp
 	"../include/Robot3R.h"
 	<Eigen/Core>
 	<Eigen/LU>
 	<cmath>
 
-1387476783 c:\users\perle\desktop\via\include\robot3r.h
+1389096832 c:\users\perle\desktop\via\include\robot3r.h
 	<iostream>
 	<Eigen/Core>
+
+1389114899 source:c:\users\perle\desktop\via\src\mathtools.cpp
+	"../include/MathTools.h"
+	<Eigen/Core>
+	<Eigen/LU>
+	<cmath>
+
+1389038163 c:\users\perle\desktop\via\include\mathtools.h
+	<iostream>
+	<Eigen/Core>
+
+1389672538 source:c:\users\perle\desktop\via\src\ddpls.cpp
+	"../include/ddpls.h"
+	"../include/ModelAwas.h"
+	"../include/integratorRK4.h"
+	"../include/Robot3R.h"
+	"../include/MathTools.h"
+	<Eigen/Core>
+	<Eigen/LU>
+	<cmath>
+
+1389630040 c:\users\perle\desktop\via\include\ddpls.h
+	<Eigen/Core>
+	<list>
 

@@ -18,6 +18,10 @@ class Robot3R
     typedef Eigen::MatrixXd Cost_dxx;
     typedef Eigen::MatrixXd Cost_duu;
 
+    typedef Eigen::VectorXd CostLS;
+    typedef Eigen::MatrixXd CostLS_dx;
+    typedef Eigen::MatrixXd CostLS_du;
+
     public :
         double L;
         double dT;
@@ -84,6 +88,14 @@ class Robot3R
     virtual Cost_dx termCost_dx(const State_t& state) const;
     virtual Cost_dxx termCost_dxx(const State_t& state) const;
 
+/* --- FUNSTIONS FOR LEAST SQUARE DDP ----------------------- */
+    /* --- Cost --------------------*/
+    virtual CostLS instCostLS(const State_t& state, const Control_t& control) const;
+    virtual CostLS_dx instCostLS_dx(const State_t& state, const Control_t& control) const;
+    virtual CostLS_du instCostLS_du(const State_t& state, const Control_t& control) const;
+    virtual CostLS_du instCostLSrurx(const State_t& state, const Control_t& control) const;
+    virtual CostLS termCostLS(const State_t& state) const;
+    virtual CostLS_dx termCostLS_dx(const State_t& state) const;
 
     protected:
     private:

@@ -210,6 +210,7 @@ for (ControlList_t::reverse_iterator iterControl=controlList.rbegin(); iterContr
     iterGain--;
 
     Control_t control = *iterControl;
+    State_t state = *iterState;
 
     State_dx fx = model.evolution_dx(state);
 	State_du fu = model. evolution_du();
@@ -226,7 +227,7 @@ for (ControlList_t::reverse_iterator iterControl=controlList.rbegin(); iterContr
 	VectorXd Qu = Lu + fu.transpose()*vx;
 	MatrixXd Qxx = Lxx + fx.transpose()*vxx*fx;
 	MatrixXd Quu = Luu + fu.transpose()*vxx*fu;
-	MatrixXd Qux = fu.transpose()*vxx*fx;
+	MatrixXd Qux = Lu*Lx.transpose() + fu.transpose()*vxx*fx;
 
 	MatrixXd QuuInv = Quu.inverse();
 	Quu(0,1) =  Quu(0,1);

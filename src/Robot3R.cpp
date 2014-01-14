@@ -13,8 +13,8 @@ Robot3R::Robot3R()
     Winst = 1;
     Wu = 0.01;
 
-    xdes = 1;
-    ydes = 2.3;
+    xdes = 2.0;
+    ydes = -1.3;
 
     mu = 0.05;
     alpha = 0.1;
@@ -160,12 +160,12 @@ Robot3R::Cost_dx Robot3R::instCost_dx(const State_t& state) const{
     C(0) = 2*Winst*(xeff(state)-xdes)*dxeff_q0(state) + 2*Winst*(yeff(state)-ydes)*dyeff_q0(state);
     C(1) = 2*Winst*(xeff(state)-xdes)*dxeff_q1(state) + 2*Winst*(yeff(state)-ydes)*dyeff_q1(state);
     C(2) = 2*Winst*(xeff(state)-xdes)*dxeff_q2(state) + 2*Winst*(yeff(state)-ydes)*dyeff_q2(state);
-    return C;
+    return C/2;
 }
 
 Robot3R::Cost_dxx Robot3R::instCost_dxx(const State_t& state) const{
     Cost_dxx C(3,3);
-/* // Normal
+ // Normal
     C(0,0) = 2*Winst*(dxeff_q0(state)*dxeff_q0(state) + ddxeff_q0(state)*(xeff(state)-xdes) + dyeff_q0(state)*dyeff_q0(state) + ddyeff_q0(state)*(yeff(state)-ydes));
     C(1,1) = 2*Winst*(dxeff_q1(state)*dxeff_q1(state) + ddxeff_q1(state)*(xeff(state)-xdes) + dyeff_q1(state)*dyeff_q1(state) + ddyeff_q1(state)*(yeff(state)-ydes));
     C(2,2) = 2*Winst*(dxeff_q2(state)*dxeff_q2(state) + ddxeff_q2(state)*(xeff(state)-xdes) + dyeff_q2(state)*dyeff_q2(state) + ddyeff_q2(state)*(yeff(state)-ydes));
@@ -177,29 +177,31 @@ Robot3R::Cost_dxx Robot3R::instCost_dxx(const State_t& state) const{
     C(2,1) = C(1,2);
 
     C(0,2) = 2*Winst*(dxeff_q0(state)*dxeff_q2(state) + (xeff(state)-xdes)*ddxeff_q0q2(state) + dyeff_q0(state)*dyeff_q2(state) + ddyeff_q0q2(state)*(yeff(state)-ydes));
-    C(2,0) = C(0,2);*/
+    C(2,0) = C(0,2);
 
     // Hess = J'J
-    Cost_dx J = instCost_dx(state);
-    C(0,0) = J(0)*J(0); C(1,1) = J(1)*J(1); C(2,2) = J(2)*J(2);
-    C(1,0) = J(1)*J(0); C(0,1) = C(1,0);
-    C(2,0) = J(2)*J(0); C(0,2) = C(2,0);
-    C(2,1) = J(2)*J(1); C(1,2) = C(2,1);
+ /*   Cost_dx J = instCost_dx(state);
+   C = J*J.transpose(); */
 
-    return C;
+    return C/2;
 }
 
 Robot3R::Cost_du Robot3R::instCost_du(const Control_t& control) const{
     Cost_du C;
     C = 2*Wu*control;
-    return C;
+    return C/2;
 }
 
 Robot3R::Cost_duu Robot3R::instCost_duu(const Control_t& control) const{
     Cost_duu C(3,3);
     C(0,0)=2*Wu; C(1,1)= 2*Wu; C(2,2) = 2*Wu;
     C(1,0) = 0; C(0,1) = 0; C(2,0) = 0; C(0,2) = 0; C(2,1) = 0; C(1,2) = 0;
-    return C;
+
+     // Hess = J'J
+/*         Cost_du J = instCost_du(control);
+         C = J*J.transpose();
+*/
+    return C/2;
 }
 
 Robot3R::Cost_dx Robot3R::termCost_dx(const State_t& state) const{
@@ -213,3 +215,79 @@ Robot3R::Cost_dxx Robot3R::termCost_dxx(const State_t& state) const{
     C = Wterminal/Winst*instCost_dxx(state);
     return C;
 }
+
+/* --- FUNSTIONS FOR LEAST SQUARE DDP ----------------------- */
+
+/* --- Cost --------------------*/
+
+Robot3R::CostLS Robot3R::instCostLS(const State_t& state, const Control_t& control) const{
+CostLS C(5);
+C(0) = Winst*((xeff(state) - xdes));
+C(1) = Winst*(yeff(state) - ydes);
+C(2) = Wu *control(0);
+C(3) = Wu *control(1);
+C(4) = Wu *control(2);
+
+return C;
+}
+
+Robot3R::CostLS_dx Robot3R::instCostLS_dx(const State_t& state, const Control_t& control) const{
+CostLS_dx C(3,5);
+C(0,0) = Winst*dxeff_q0(state); C(1,0) = Winst*dxeff_q1(state); C(2,0) = Winst*dxeff_q2(state);
+C(0,1) = Winst*dyeff_q0(state); C(1,1) = Winst*dyeff_q1(state); C(2,1) = Winst*dyeff_q2(state);
+C(0,2) = 0.0; C(1,2) = 0.0; C(2,2) = 0.0;
+C(0,3) = 0.0; C(1,3) = 0.0; C(2,3) = 0.0;
+C(0,4) = 0.0; C(1,4) = 0.0; C(2,4) = 0.0;
+
+return C.transpose();
+}
+
+Robot3R::CostLS_du Robot3R::instCostLS_du(const State_t& state, const Control_t& control) const{
+CostLS_du C(3,5);
+C(0,0) = 0.0; C(1,0) = 0.0; C(2,0) = 0.0;
+C(0,1) = 0.0; C(1,1) = 0.0; C(2,1) = 0.0;
+C(0,2) = Wu; C(1,2) = 0.0; C(2,2) = 0.0;
+C(0,3) = 0.0; C(1,3) = Wu; C(2,3) = 0.0;
+C(0,4) = 0.0; C(1,4) = 0.0; C(2,4) = Wu;
+
+return C.transpose();
+}
+
+Robot3R::CostLS_du Robot3R::instCostLSrurx(const State_t& state, const Control_t& control) const{
+CostLS_du C(5,6);
+
+CostLS_du Cu = instCostLS_du(state,control);
+CostLS_dx Cx = instCostLS_dx(state,control);
+
+for(int i=0;i<3;i++){
+    for (int j=0;j<5;j++){
+        C(j,i) = Cx(j,i);
+        C(j,i+3) = Cu(j,i);
+    }
+}
+return C;
+}
+
+
+Robot3R::CostLS Robot3R::termCostLS(const State_t& state) const{
+CostLS C(5);
+C(0) = Wterminal*((xeff(state) - xdes));
+C(1) = Wterminal*(yeff(state) - ydes);
+C(2) = 0.0;
+C(3) = 0.0;
+C(4) = 0.0;
+
+return C;
+}
+
+Robot3R::CostLS_dx Robot3R::termCostLS_dx(const State_t& state) const{
+CostLS_dx C(3,5);
+C(0,0) = Wterminal*dxeff_q0(state); C(1,0) = Wterminal*dxeff_q1(state); C(2,0) = Wterminal*dxeff_q2(state);
+C(0,1) = Wterminal*dyeff_q0(state); C(1,1) = Wterminal*dyeff_q1(state); C(2,1) = Wterminal*dyeff_q2(state);
+C(0,2) = 0.0; C(1,2) = 0.0; C(2,2) = 0.0;
+C(0,3) = 0.0; C(1,3) = 0.0; C(2,3) = 0.0;
+C(0,4) = 0.0; C(1,4) = 0.0; C(2,4) = 0.0;
+
+return C.transpose();
+}
+
